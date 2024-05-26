@@ -1,4 +1,5 @@
 ## Azure-Architecture
+![image](https://github.com/jester91/Azure-Architecture-/assets/50679897/bb0a6370-836f-41ee-ada8-68d60cebf91f)
 
 
 
@@ -73,6 +74,3 @@ Components and Communication:
 - **Azure Traffic Manager**: Instead of Azure Front Door if the application does not require advanced WAF or global routing features. Traffic Manager is simpler and may reduce costs but lacks some of the advanced capabilities of Front Door.
 
 - **Direct Use of Azure Blob Storage from the API**: Bypassing Azure Functions for certain types of file manipulations might reduce latency and complexity, though it might increase the load and complexity on the API layer.
-
-Conclusion:
-The chosen architecture effectively meets the requirements for scalability, security, and performance. It leverages Azure’s powerful PaaS capabilities to ensure the system is robust and maintainable. Adjustments and enhancements can be considered based on cost management, response times, and specific operational needs as the system evolves.
