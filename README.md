@@ -1,5 +1,6 @@
 ## Azure-Architecture
-![image](https://github.com/jester91/Azure-Architecture/assets/50679897/fcb6623c-d9e2-4c00-b3ea-27d16d01d8c5)
+![image](https://github.com/jester91/Azure-Architecture-/assets/50679897/6991f7e3-eaf1-4683-8cd3-d81fd98e9de8)
+
 
 ### High-Level Architecture Overview:
 Components and Communication:
