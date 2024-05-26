@@ -1,5 +1,5 @@
 ## Azure-Architecture
-![image](https://github.com/jester91/Azure-Architecture-/assets/50679897/6991f7e3-eaf1-4683-8cd3-d81fd98e9de8)
+
 
 
 ### High-Level Architecture Overview:
@@ -10,9 +10,11 @@ Components and Communication:
 
 - **Azure API Management**: Manages, secures, and optimizes API calls. It routes authenticated API calls to the correct backend services, and it is capable of handling rate limiting and caching to enhance API responsiveness.
 
-- **Azure Active Directory**: Provides authentication services for both the UI and API layers, ensuring that only authenticated users can access the system's functionalities.
+- **Azure Entra ID**: Provides authentication services for both the UI and API layers, ensuring that only authenticated users can access the system's functionalities.
 
-- **Azure Functions**: Used for processing both small, quick tasks (like sending email reminders) and resource-intensive tasks (like processing large transaction files). It interacts with Azure Blob Storage for storing and retrieving large files.
+- **Azure Functions**: Used for processing resource-intensive tasks (like processing large transaction files). It interacts with Azure Blob Storage for storing and retrieving large files.
+  
+- **Azure Queue Storage**: Used for processing small tasks (like email sending). It's serverless, able to scale based on demand and trigger-based execution. 
 
 - **Azure Blob Storage**: Manages the storage of large, unstructured data files that need to be processed by Azure Functions.
 
@@ -21,8 +23,10 @@ Components and Communication:
 ### Data Storage:
 - **Azure Blob Storage**:  stores large, unstructured files, primarily used by Azure Functions for processing large data sets.
 - **Secrets and Keys**: Managed by Azure Key Vault, enhancing security by centrally managing encryption keys and secrets.
+  
 ## Pros and Cons of the Architecture
-Pros:
+
+### Pros:
 - **Scalability**: The use of Azure Front Door and Application Gateway allows the system to handle high loads and scale based on demand.
 - **Security**: Integrating Azure Active Directory and Azure Key Vault provides robust authentication and secure management of secrets and keys. API Management adds an extra layer of security for API endpoints.
 - **Performance**: Azure Functions offer a serverless computing environment that scales automatically, making it cost-effective and efficient for processing varying workloads.
@@ -31,6 +35,37 @@ Pros:
 - **Complexity**: Managing multiple Azure services together increases complexity in configuration and monitoring.
 - **Cost**: Utilizing several managed services can increase operational costs, particularly if not managed and scaled appropriately.
 - **Cold Start for Azure Functions**: Serverless functions can experience latency due to cold starts, especially if they are not frequently invoked.
+
+## Pros and Cons of the used resources:
+
+- **Azure Front Door**:
+  - **PRO**: WAF(Web application firewall) which is a a built-in - **PRO**tection against attacks, Load balacing
+  - **CON**: Complex - **CON**figuration for this small application. 
+- **Azure Application Gateway**:
+  - **PRO**: URL-based routing, session affinity
+  - **CON**: Costly for small traffic load.
+
+- **Azure API Management**:
+  - **PRO**: Orchestrator, offer throttling, secure access, and OAuth  with Azure Entra. 
+  - **CON**: Complex policies, the best practices to handle it in terraform. 
+- **Azure Entra ID**:
+  - **PRO**: It makes easier to authenticate via APIM. 
+  - **CON**: Feature limitation for different tiers. 
+
+- **Azure Functions**:
+  - **PRO**: Serverless execution based on call, cost effeciency.
+  - **CON**: Cold start which takes some to start the code, same issue for upscaling.
+  
+- **Azure Queue Storage**:
+  - **PRO**: Scalable, cost-effective for smaller tasks.
+  - **CON**: Throughput can be limited for extreme high requests. 
+- **Azure Blob Storage**:
+  - **PRO**: Scalability, easy to scale and store large amount of unstructured data. Cost effective. 
+  - **CON**: Access latency based on tier. 
+
+- **Azure Key Vault**:
+  - **PRO**: Increase security, help to achieve compliance requirements. 
+  - **CON**: Complexity for key rotation. Automation is needed. 
 
 ### Alternatives and Considerations:
 - **Azure Service Fabric or Kubernetes (AKS)**: Instead of Azure Functions, for applications requiring more control over the environment and persistent services, Azure Kubernetes Service (AKS) or Azure Service Fabric could be used. These services offer better control over containers and microservices, although they come with increased complexity in management.
