@@ -1,5 +1,6 @@
 ## Azure-Architecture
-![image](https://github.com/jester91/Azure-Architecture-/assets/50679897/044a57a9-d95e-42c1-b657-7ef8884a495f)
+![image](https://github.com/jester91/Azure-Architecture/assets/50679897/374313b4-3941-48a8-bc94-8742ccbfb323)
+
 
 ### Workflow:
 1. The user send a request that reaches the Azure Front Door, it provides SSL termination and load balancing
@@ -7,7 +8,7 @@
 3. APIM provides a publicly accessible UI with authentication and API layer. For authentication Azure Entra ID is used.
 4. APIM forwards the authenticated call to Azure Function which executes the resource-intensive code or Azure Logic App which sends email based on the configuration.
 5. Azure Function executes the code and save the output to the Azure Blob Storage.
-6. Azure Function, APIM and Logic App is connected to Azure Monitor and App Insight with that we're able to see all the traces, logs and metrics of the application.
+6. Azure Function and Logic App are connected to Azure Monitor via APIM, and App Insight so that we're able to see all the traces, logs and metrics of the application.
 7. To increase the security the serverless resources have service principles to communicate to each other or RBAC, but if we stay with credentials we can use Azure Key Vault to store them securely.   
 
 ### High-Level Architecture Overview:
@@ -47,10 +48,11 @@ Components and Communication:
 ## Pros and Cons of the used resources:
 
 - **Azure Front Door**:
-  - **PRO**: WAF(Web application firewall) which is a a built-in - **PRO**tection against attacks, Load balancing
-  - **CON**: Complex - Configuration for this small application. 
+  - **PRO**: WAF(Web application firewall) which is a a built-in - **PRO**tection against attacks, Load balancing. Able to cache static content, which reduces the number of requests that reach the backend services. 
+  - **CON**: Complex - Configuration for this small application.
+    
 - **Azure Application Gateway**:
-  - **PRO**: URL-based routing, session affinity
+  - **PRO**: URL-based routing, session affinity, possible to implement caching policies for specific API endpoints
   - **CON**: Costly for small traffic load.
 
 - **Azure API Management**:
