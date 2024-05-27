@@ -1,7 +1,14 @@
 ## Azure-Architecture
-![image](https://github.com/jester91/Azure-Architecture-/assets/50679897/bb0a6370-836f-41ee-ada8-68d60cebf91f)
+![image](https://github.com/jester91/Azure-Architecture-/assets/50679897/044a57a9-d95e-42c1-b657-7ef8884a495f)
 
-
+### Workflow:
+1. The user send a request that reaches the Azure Front Door, it provides SSL termination and load balancing
+2. Azure Front Door forwards the call to the Azure Application Gateway, which performs URL-based routing to APIM.
+3. APIM provides a publicly accessible UI with authentication and API layer. For authentication Azure Entra ID is used.
+4. APIM forwards the authenticated call to Azure Function which executes the resource-intensive code or Azure Logic App which sends email based on the configuration.
+5. Azure Function executes the code and save the output to the Azure Blob Storage.
+6. Azure Function, APIM and Logic App is connected to Azure Monitor and App Insight with that we're able to see all the traces, logs and metrics of the application.
+7. To increase the security the serverless resources have service principles to communicate to each other or RBAC, but if we stay with credentials we can use Azure Key Vault to store them securely.   
 
 ### High-Level Architecture Overview:
 Components and Communication:
@@ -9,13 +16,13 @@ Components and Communication:
 
 - **Azure Application Gateway**: Acts as a regional load balancer and is configured for URL-based routing, SSL termination, and session affinity. It helps in distributing traffic within the Azure region to various backend services.
 
-- **Azure API Management**: Manages, secures, and optimizes API calls. It routes authenticated API calls to the correct backend services, and it is capable of handling rate limiting and caching to enhance API responsiveness.
+- **Azure API Management**: Manages, secures, and optimizes API calls. It routes authenticated API calls to the correct backend services, and it is capable of handling rate limiting and caching to enhance API responsiveness. (Only one used in this infrastructure)
 
 - **Azure Entra ID**: Provides authentication services for both the UI and API layers, ensuring that only authenticated users can access the system's functionalities.
 
 - **Azure Functions**: Used for processing resource-intensive tasks (like processing large transaction files). It interacts with Azure Blob Storage for storing and retrieving large files.
   
-- **Azure Queue Storage**: Used for processing small tasks (like email sending). It's serverless, able to scale based on demand and trigger-based execution. 
+- **Azure Logic App**: Used for processing small tasks (like email sending). This resource can be easily modified to solve more complex tasks like email sending.
 
 - **Azure Blob Storage**: Manages the storage of large, unstructured data files that need to be processed by Azure Functions.
 
@@ -40,8 +47,8 @@ Components and Communication:
 ## Pros and Cons of the used resources:
 
 - **Azure Front Door**:
-  - **PRO**: WAF(Web application firewall) which is a a built-in - **PRO**tection against attacks, Load balacing
-  - **CON**: Complex - **CON**figuration for this small application. 
+  - **PRO**: WAF(Web application firewall) which is a a built-in - **PRO**tection against attacks, Load balancing
+  - **CON**: Complex - Configuration for this small application. 
 - **Azure Application Gateway**:
   - **PRO**: URL-based routing, session affinity
   - **CON**: Costly for small traffic load.
@@ -54,23 +61,27 @@ Components and Communication:
   - **CON**: Feature limitation for different tiers. 
 
 - **Azure Functions**:
-  - **PRO**: Serverless execution based on call, cost effeciency.
+  - **PRO**: Serverless execution based on call, cost efficiency.
   - **CON**: Cold start which takes some to start the code, same issue for upscaling.
   
 - **Azure Queue Storage**:
   - **PRO**: Scalable, cost-effective for smaller tasks.
-  - **CON**: Throughput can be limited for extreme high requests. 
+  - **CON**: Throughput can be limited for extremely high requests. 
 - **Azure Blob Storage**:
-  - **PRO**: Scalability, easy to scale and store large amount of unstructured data. Cost effective. 
+  - **PRO**: Scalability, easy to scale, and store large amounts of unstructured data. Cost-effective. 
   - **CON**: Access latency based on tier. 
 
 - **Azure Key Vault**:
-  - **PRO**: Increase security, help to achieve compliance requirements. 
+  - **PRO**: Increase security, and help to achieve compliance requirements. 
   - **CON**: Complexity for key rotation. Automation is needed. 
 
 ### Alternatives and Considerations:
-- **Azure Service Fabric or Kubernetes (AKS)**: Instead of Azure Functions, for applications requiring more control over the environment and persistent services, Azure Kubernetes Service (AKS) or Azure Service Fabric could be used. These services offer better control over containers and microservices, although they come with increased complexity in management.
+- **Azure Service Fabric or Kubernetes (AKS)**: Instead of Azure Functions, for applications requiring more control over the environment and persistent services, Azure Kubernetes Service (AKS). These services offer better control over containers and microservices, although they come with increased complexity in management.
 
 - **Azure Traffic Manager**: Instead of Azure Front Door if the application does not require advanced WAF or global routing features. Traffic Manager is simpler and may reduce costs but lacks some of the advanced capabilities of Front Door.
 
 - **Direct Use of Azure Blob Storage from the API**: Bypassing Azure Functions for certain types of file manipulations might reduce latency and complexity, though it might increase the load and complexity on the API layer.
+
+- **Queue Storage with Functions instead of Logic App**: This resource pair can be used to lower the cost of the infrastructure and improve the application speed.
+
+- **Azure Databases(pSQL or MSSQL) **: We can use relation databases to store structured data, it's usage depends on the purpose of the application. 
