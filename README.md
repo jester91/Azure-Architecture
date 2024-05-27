@@ -84,4 +84,4 @@ Components and Communication:
 
 - **Queue Storage with Functions instead of Logic App**: This resource pair can be used to lower the cost of the infrastructure and improve the application speed.
 
-- **Azure Databases(pSQL or MSSQL) **: We can use relation databases to store structured data, it's usage depends on the purpose of the application. 
+- **Azure Databases(pSQL or MSSQL)**: We can use relation databases to store structured data, it's usage depends on the purpose of the application. 
